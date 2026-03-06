@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout | CropBoom</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-50 min-h-screen p-4 md:p-8">
+
+    <div class="max-w-4xl mx-auto grid md:grid-cols-3 gap-8">
+        <div class="md:col-span-2 space-y-6">
+            <div class="bg-white p-6 rounded-2xl shadow-sm">
+                <h2 class="text-2xl font-bold mb-6 flex items-center gap-2">
+                    <i class="fas fa-truck text-green-600"></i> Delivery Details
+                </h2>
+                <form id="checkoutForm" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="md:col-span-2">
+                        <label class="block text-sm font-medium text-gray-700">Full Name</label>
+                        <input type="text" id="custName" required class="w-full px-4 py-2 mt-1 border rounded-lg focus:ring-2 focus:ring-green-500 outline-none">
+                    </div>
+                    <div class="md:col-span-2">
+                        <label class="block text-sm font-medium text-gray-700">Delivery Address</label>
+                        <textarea id="custAddress" required rows="3" class="w-full px-4 py-2 mt-1 border rounded-lg focus:ring-2 focus:ring-green-500 outline-none" placeholder="House No, Street, Landmark..."></textarea>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Delivery Date</label>
+                        <input type="date" id="deliveryDate" required class="w-full px-4 py-2 mt-1 border rounded-lg focus:ring-2 focus:ring-green-500 outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Payment Method</label>
+                        <select id="payMethod" class="w-full px-4 py-2 mt-1 border rounded-lg focus:ring-2 focus:ring-green-500 outline-none">
+                            <option value="COD">Cash on Delivery</option>
+                            <option value="UPI" disabled>UPI (Coming Soon)</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="md:col-span-1">
+            <div class="bg-white p-6 rounded-2xl shadow-sm sticky top-8">
+                <h3 class="text-xl font-bold mb-4">Order Summary</h3>
+                <div id="summaryItems" class="space-y-3 mb-4 border-b pb-4">
+                    </div>
+                <div class="flex justify-between text-lg font-bold text-gray-800 mb-6">
+                    <span>Total Amount:</span>
+                    <span id="summaryTotal">₹0</span>
+                </div>
+                <button onclick="placeOrder()" class="w-full bg-green-600 text-white py-4 rounded-xl font-bold text-lg hover:bg-green-700 transition shadow-lg shadow-green-200">
+                    Confirm Order
+                </button>
+                <p class="text-center text-xs text-gray-400 mt-4">By placing an order, you agree to our Terms of Service.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const cart = JSON.parse(localStorage.getItem('tempCart')) || [];
+        const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+
+        function initCheckout() {
+            if(cart.length === 0) window.location.href = 'buyer-dashboard.html';
+            
+            const container = document.getElementById('summaryItems');
+            let total = 0;
+            
+            cart.forEach(item => {
+                total += item.price * item.quantity;
+                container.innerHTML += `
+                    <div class="flex justify-between text-sm">
+                        <span class="text-gray-600">${item.name} (x${item.quantity})</span>
+                        <span class="font-medium">₹${item.price * item.quantity}</span>
+                    </div>
+                `;
+            });
+            document.getElementById('summaryTotal').innerText = `₹${total}`;
+            document.getElementById('custName').value = currentUser.name;
+        }
+
+        function placeOrder() {
+            const address = document.getElementById('custAddress').value;
+            const date = document.getElementById('deliveryDate').value;
+
+            if(!address || !date) return alert("Please fill in all delivery details.");
+
+            const orders = JSON.parse(localStorage.getItem('cropBoomBookings')) || [];
+            const crops = JSON.parse(localStorage.getItem('cropBoomItems')) || [];
+
+            cart.forEach(item => {
+                // 1. Create Booking Record (For Farmer)
+                const newOrder = {
+                    orderId: 'ORD-' + Date.now() + Math.floor(Math.random() * 1000),
+                    cropId: item.id,
+                    cropName: item.name,
+                    buyerName: currentUser.name,
+                    buyerEmail: currentUser.email,
+                    farmerEmail: item.farmerEmail,
+                    quantity: item.quantity,
+                    totalPrice: item.price * item.quantity,
+                    address: address,
+                    deliveryDate: date,
+                    status: 'Pending',
+                    timestamp: new Date().toISOString()
+                };
+                orders.push(newOrder);
+
+                // 2. Reduce Inventory Quantity
+                const cropIndex = crops.findIndex(c => c.id === item.id);
+                if(cropIndex !== -1) {
+                    crops[cropIndex].qty = Math.max(0, crops[cropIndex].qty - item.quantity);
+                }
+            });
+
+            // Save back to "Database"
+            localStorage.setItem('cropBoomBookings', JSON.stringify(orders));
+            localStorage.setItem('cropBoomItems', JSON.stringify(crops));
+            
+            // Clear Cart
+            localStorage.removeItem('tempCart');
+
+            alert("🎉 Order Placed Successfully! Your farmer has been notified.");
+            window.location.href = 'buyer-dashboard.html';
+        }
+
+        initCheckout();
+    </script>
+</body>
+</html>

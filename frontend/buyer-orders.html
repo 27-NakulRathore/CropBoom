@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Orders | CropBoom</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-50 min-h-screen">
+
+    <nav class="bg-white shadow-sm px-8 py-4 flex justify-between items-center">
+        <div onclick="location.href='buyer-dashboard.html'" class="text-2xl font-bold text-green-600 cursor-pointer flex items-center gap-2">
+            <i class="fas fa-arrow-left text-lg"></i> Back to Shop
+        </div>
+        <h1 class="text-xl font-bold text-gray-800">My Purchase History</h1>
+    </nav>
+
+    <main class="p-8 max-w-5xl mx-auto">
+        <div class="bg-white rounded-2xl shadow-sm overflow-hidden">
+            <table class="w-full text-left">
+                <thead class="bg-gray-50 border-b">
+                    <tr>
+                        <th class="p-4 font-semibold text-gray-600">Order Date</th>
+                        <th class="p-4 font-semibold text-gray-600">Crop Details</th>
+                        <th class="p-4 font-semibold text-gray-600">Amount</th>
+                        <th class="p-4 font-semibold text-gray-600">Status</th>
+                    </tr>
+                </thead>
+                <tbody id="buyerOrderBody">
+                    </tbody>
+            </table>
+        </div>
+
+        <div class="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="bg-green-600 text-white p-6 rounded-2xl shadow-lg">
+                <p class="opacity-80 uppercase text-xs font-bold tracking-wider">Total Spent</p>
+                <h2 id="totalSpent" class="text-3xl font-bold mt-1">₹0</h2>
+            </div>
+            <div class="bg-white p-6 rounded-2xl shadow-md border border-gray-100">
+                <p class="text-gray-500 uppercase text-xs font-bold tracking-wider">Orders Completed</p>
+                <h2 id="completedCount" class="text-3xl font-bold text-gray-800 mt-1">0</h2>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+        if(!currentUser || currentUser.role !== 'buyer') window.location.href = 'login.html';
+
+        function loadBuyerOrders() {
+            const allBookings = JSON.parse(localStorage.getItem('cropBoomBookings')) || [];
+            // Filter orders for THIS specific buyer
+            const myOrders = allBookings.filter(b => b.buyerEmail === currentUser.email);
+            
+            const tbody = document.getElementById('buyerOrderBody');
+            let totalSpent = 0;
+            let completed = 0;
+
+            tbody.innerHTML = '';
+
+            if(myOrders.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="4" class="p-12 text-center text-gray-400">You haven't placed any orders yet.</td></tr>`;
+                return;
+            }
+
+            // Sort by most recent first
+            myOrders.reverse().forEach(order => {
+                const date = new Date(order.timestamp).toLocaleDateString('en-IN', {
+                    day: 'numeric', month: 'short', year: 'numeric'
+                });
+
+                const isDelivered = order.status === 'Delivered';
+                if(isDelivered) {
+                    totalSpent += Number(order.totalPrice);
+                    completed++;
+                }
+
+                tbody.innerHTML += `
+                    <tr class="border-b last:border-0 hover:bg-gray-50 transition">
+                        <td class="p-4 text-sm text-gray-500">${date}</td>
+                        <td class="p-4">
+                            <div class="font-bold text-gray-800">${order.cropName}</div>
+                            <div class="text-xs text-gray-400">${order.quantity} Kg • Seller: ${order.farmerEmail}</div>
+                        </td>
+                        <td class="p-4 font-bold text-gray-700">₹${order.totalPrice}</td>
+                        <td class="p-4">
+                            <span class="px-3 py-1 rounded-full text-xs font-bold ${
+                                isDelivered ? 'bg-green-100 text-green-700' : 'bg-blue-100 text-blue-700'
+                            }">
+                                ${order.status}
+                            </span>
+                        </td>
+                    </tr>
+                `;
+            });
+
+            document.getElementById('totalSpent').innerText = `₹${totalSpent}`;
+            document.getElementById('completedCount').innerText = completed;
+        }
+
+        loadBuyerOrders();
+    </script>
+</body>
+</html>

@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register | CropBoom</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen p-4">
+
+    <div class="bg-white p-8 rounded-2xl shadow-xl w-full max-w-md relative">
+        <a href="index.html" class="absolute top-6 left-6 text-gray-400 hover:text-green-600 transition">
+            <i class="fas fa-arrow-left text-xl"></i>
+        </a>
+
+        <div class="text-center mb-8 mt-4">
+            <h2 class="text-3xl font-bold text-green-700">Create Account</h2>
+            <p class="text-gray-500">Join the smart farming community</p>
+        </div>
+
+        <form id="registerForm" class="space-y-4">
+            <div class="flex bg-gray-100 p-1 rounded-lg mb-4">
+                <button type="button" onclick="setRole('farmer')" id="roleFarmer" class="flex-1 py-2 rounded-md transition font-medium bg-white text-green-600 shadow-sm">
+                    <i class="fas fa-tractor mr-2"></i>Farmer
+                </button>
+                <button type="button" onclick="setRole('buyer')" id="roleBuyer" class="flex-1 py-2 rounded-md transition font-medium text-gray-500 hover:text-green-600">
+                    <i class="fas fa-shopping-cart mr-2"></i>Buyer
+                </button>
+            </div>
+            <input type="hidden" id="userRole" value="farmer">
+
+            <input type="text" id="regName" placeholder="Full Name" required class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500 outline-none">
+            <input type="email" id="regEmail" placeholder="Email Address" required class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500 outline-none">
+            <input type="password" id="regPass" placeholder="Password" required class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500 outline-none">
+
+            <button type="submit" class="w-full bg-green-600 text-white py-3 rounded-lg font-bold hover:bg-green-700 transition">
+                Register as <span id="btnRoleText">Farmer</span>
+            </button>
+        </form>
+    </div>
+
+    <script>
+        function setRole(role) {
+            const fBtn = document.getElementById('roleFarmer');
+            const bBtn = document.getElementById('roleBuyer');
+            const roleInp = document.getElementById('userRole');
+            const btnText = document.getElementById('btnRoleText');
+
+            if(role === 'farmer') {
+                fBtn.className = "flex-1 py-2 rounded-md bg-white text-green-600 shadow-sm font-medium";
+                bBtn.className = "flex-1 py-2 rounded-md text-gray-500 font-medium";
+                roleInp.value = 'farmer';
+                btnText.innerText = 'Farmer';
+            } else {
+                bBtn.className = "flex-1 py-2 rounded-md bg-white text-green-600 shadow-sm font-medium";
+                fBtn.className = "flex-1 py-2 rounded-md text-gray-500 font-medium";
+                roleInp.value = 'buyer';
+                btnText.innerText = 'Buyer';
+            }
+        }
+
+        document.getElementById('registerForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const users = JSON.parse(localStorage.getItem('cropBoomUsers')) || [];
+            const newUser = {
+                name: document.getElementById('regName').value,
+                email: document.getElementById('regEmail').value,
+                pass: document.getElementById('regPass').value,
+                role: document.getElementById('userRole').value
+            };
+            users.push(newUser);
+            localStorage.setItem('cropBoomUsers', JSON.stringify(users));
+            alert("Registered! Please login.");
+            window.location.href = 'login.html';
+        });
+    </script>
+</body>
+</html>
