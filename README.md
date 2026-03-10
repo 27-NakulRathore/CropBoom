@@ -9,48 +9,48 @@ The platform also integrates AI-powered crop image analysis to help farmers auto
 
 👨‍🌾 Farmer Features
 
-AI-based crop image analysis using Google Gemini Vision API
+- AI-based crop image analysis using Google Gemini Vision API
 
-Add crop listings with price and quantity
+- Add crop listings with price and quantity
 
-View and manage crop inventory
+- View and manage crop inventory
 
-Track incoming buyer orders
+- Track incoming buyer orders
 
-Mark orders as delivered
+- Mark orders as delivered
 
-Receive buyer inquiries
+- Receive buyer inquiries
 
 
 🛒 Buyer Features
 
-Browse available crops
+- Browse available crops
 
-Send inquiries to farmers
+- Send inquiries to farmers
 
-Place crop bookings
+- Place crop bookings
 
-View order status
+- View order status
 
 
 🤖 AI Integration
 
-Upload crop image
+- Upload crop image
 
-AI detects crop type
+- AI detects crop type
 
-Automatically fills crop name
+- Automatically fills crop name
 
-Market price auto-suggested
+- Market price auto-suggested
 
 
 📊 Dashboard
 
-Total crops listed
+- Total crops listed
 
-Active orders
+- Active orders
 
-Total revenue
+- Total revenue
 
 
 🛠️ Tech Stack
@@ -69,7 +69,9 @@ Total revenue
 
 
 📂 Project Structure
+
 CropBoom
+
 │
 ├── index.html
 
@@ -98,11 +100,11 @@ CropBoom
 
 1. Clone the repository
 
-   git clone https://github.com/27-NakulRathore/CropBoom.git
+   * git clone https://github.com/27-NakulRathore/CropBoom.git
 
 2. Open the project folder
 
-   cd CropBoom
+   * cd CropBoom
 
 3. Open index.html in your browser
 
@@ -110,15 +112,15 @@ CropBoom
 
 4. 🔑 AI Setup (Gemini API)
 
-     Go to
+     * Go to
 
      https://aistudio.google.com/app/apikey
 
-      Generate your API key
+      * Generate your API key
 
 5.Add it inside:
 
-   const API_KEY = "YOUR_GEMINI_API_KEY";
+   * const API_KEY = "YOUR_GEMINI_API_KEY";
    
 🧠 How AI Works
 
@@ -135,9 +137,16 @@ CropBoom
 6. Market price suggested
 
 
-📸 Screenshots
+## 📸 Screenshots
 
-screenshots/
-   dashboard.png
-   ai-detection.png
-   crop-listing.pn
+### Home Page
+
+![Dashboard](ss/image1.png)
+
+### Farmer Dashboard
+
+![AI Detection](ss/image2.png)
+
+### Buyer Dashboard
+
+![Crop Listing](ss/image3.png)
